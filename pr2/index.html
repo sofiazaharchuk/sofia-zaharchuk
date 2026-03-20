@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <title>Практична робота 3</title>
+</head>
+<body>
+<script>
+    // ЗАВДАННЯ 1: Перевірка віку користувача
+
+    const age = Number(prompt("Введіть ваш вік:"));
+
+    if (age < 18) {
+        alert("Вам заборонено вхід");
+    } else if (age <= 65) {
+        alert("Ласкаво просимо!");
+    } else {
+        alert("Будь ласка, будьте обережні!");
+    }
+
+
+    // ЗАВДАННЯ 2: Виведення парних чисел
+
+    const n2 = Number(prompt("Введіть число n:"));
+
+    for (let i = 2; i <= n2; i++) {
+        if (i % 2 === 0) {
+            console.log(i);
+        }
+    }
+
+
+    // ЗАВДАННЯ 3: Обчислення факторіалу числа
+
+    const n3 = Number(prompt("Введіть число n:"));
+    let factorial = 1;
+    let j = 1;
+
+    while (j <= n3) {
+        factorial *= j;
+        j++;
+    }
+
+    console.log(`${n3}! = ${factorial}`);
+
+
+    // ЗАВДАННЯ 4: Калькулятор
+
+    const a = Number(prompt("Введіть перше число:"));
+    const b = Number(prompt("Введіть друге число:"));
+    const operator = prompt("Введіть операцію (+, -, *, /):");
+    let result;
+
+    switch (operator) {
+        case "+":
+            result = a + b;
+            break;
+        case "-":
+            result = a - b;
+            break;
+        case "*":
+            result = a * b;
+            break;
+        case "/":
+            result = b !== 0 ? a / b : "Ділення на нуль!";
+            break;
+        default:
+            result = "Невідома операція";
+    }
+
+    alert(`Результат: ${result}`);
+
+
+    // ЗАВДАННЯ 5: Гра "Вгадай число"
+
+    const secret = Math.floor(Math.random() * 100) + 1;
+    let guess;
+
+    do {
+        guess = Number(prompt("Вгадайте число від 1 до 100:"));
+
+        if (guess < secret) {
+            alert("Загадане число більше");
+        } else if (guess > secret) {
+            alert("Загадане число менше");
+        } else {
+            alert("Вітаємо! Ви вгадали число!");
+        }
+    } while (guess !== secret);
+
+
+    // ДОДАТКОВЕ ЗАВДАННЯ: Пошук найбільшого спільного дільника
+
+    const numA = Number(prompt("Введіть перше число для НСД:"));
+    const numB = Number(prompt("Введіть друге число для НСД:"));
+    let x = numA;
+    let y = numB;
+
+    while (y !== 0) {
+        const temp = y;
+        y = x % y;
+        x = temp;
+    }
+
+    console.log(`НСД(${numA}, ${numB}) = ${x}`);
+</script>
+</body>
+</html>
