@@ -32,7 +32,6 @@
             overflow-x: hidden;
         }
 
-        /* STARS / SPARKLES background */
         body::before {
             content: '';
             position: fixed; inset: 0;
@@ -44,7 +43,6 @@
             pointer-events: none; z-index: 0;
         }
 
-        /* FLOATING EMOJIS */
         .floaties {
             position: fixed; inset: 0; pointer-events: none; z-index: 0; overflow: hidden;
         }
@@ -60,8 +58,7 @@
             90%  { opacity: 0.2; }
             100% { transform: translateY(-10vh) rotate(360deg); opacity: 0; }
         }
-
-        /* NAV */
+        
         nav {
             position: sticky; top: 0; z-index: 100;
             background: rgba(255,240,248,0.85);
@@ -87,8 +84,6 @@
             transition: all 0.2s;
         }
         .nav-pills a:hover { background: var(--purple); color: #fff; transform: scale(1.05); }
-
-        /* HERO */
         .hero {
             position: relative; z-index: 1;
             text-align: center;
@@ -145,7 +140,6 @@
             50%      { transform: rotate(5deg); }
         }
 
-        /* MAIN */
         .main {
             position: relative; z-index: 1;
             max-width: 900px; margin: 0 auto;
@@ -153,7 +147,6 @@
             display: flex; flex-direction: column; gap: 40px;
         }
 
-        /* TASK CARD */
         .task-card {
             background: var(--card);
             border: 3px solid var(--pink2);
@@ -215,8 +208,6 @@
         }
 
         .task-body { padding: 22px 26px; }
-
-        /* BUTTON */
         .btn {
             display: inline-flex; align-items: center; gap: 8px;
             padding: 12px 26px;
@@ -235,7 +226,6 @@
         }
         .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
 
-        /* PROGRESS */
         .progress-wrap {
             margin: 14px 0 0;
             background: var(--purple2);
@@ -250,7 +240,6 @@
             transition: width 0.5s cubic-bezier(.4,0,.2,1);
         }
 
-        /* LOG */
         .log {
             margin-top: 16px;
             background: #fdf4ff;
@@ -283,8 +272,6 @@
             border-radius: 50%;
             animation: spin 0.7s linear infinite; flex-shrink: 0;
         }
-
-        /* FOOTER */
         footer {
             position: relative; z-index: 1;
             text-align: center; padding: 50px 20px;
@@ -327,7 +314,7 @@
 </nav>
 
 <div class="hero">
-    <div class="hero-cloud">✨ ДОМАШНЯ РОБОТА · PROMISES · ASYNC/AWAIT ✨</div>
+    <div class="hero-cloud">✨ Практична робота · PROMISES · ASYNC/AWAIT ✨</div>
     <h1 class="hero-title">Async Kawaii<br/>Land 🌸</h1>
     <span class="hero-unicorn">🦄</span>
     <p class="hero-sub">Promise.all · for-await-of · allSettled · retry logic</p>
@@ -336,7 +323,6 @@
 
 <div class="main">
 
-    <!-- ВАРІАНТ 3 -->
     <div class="task-card" id="v3">
         <div class="task-head">
             <div class="task-emoji">🌈</div>
@@ -362,7 +348,6 @@
         </div>
     </div>
 
-    <!-- ВАРІАНТ 4 -->
     <div class="task-card" id="v4">
         <div class="task-head">
             <div class="task-emoji">🐱</div>
@@ -388,7 +373,6 @@
         </div>
     </div>
 
-    <!-- ВАРІАНТ 5 -->
     <div class="task-card" id="v5">
         <div class="task-head">
             <div class="task-emoji">✨</div>
@@ -422,7 +406,6 @@
 </footer>
 
 <script>
-    // floating emojis
     const emojis = ['🦄','🐱','🌸','✨','🌈','💖','🌟','🍭','🎀','💫','🐾','🌺'];
     const floaties = document.getElementById('floaties');
     for (let i = 0; i < 22; i++) {
@@ -438,7 +421,6 @@
         floaties.appendChild(el);
     }
 
-    // ── helpers ────────────────────────────────────────────
     function log(id, text, cls = '') {
         const el = document.getElementById(id);
         const line = document.createElement('span');
@@ -461,10 +443,6 @@
             '<div class="loading"><div class="spinner"></div>🌸 Зачекайте, магія готується...</div>';
     }
 
-
-    // ============================================================
-    // ВАРІАНТ 3: Паралельне та послідовне виконання
-    // ============================================================
 
     function fetchData(id) {
         const delay = Math.floor(Math.random() * 2000) + 1000;
@@ -516,9 +494,6 @@
     });
 
 
-    // ============================================================
-    // ВАРІАНТ 4: Залежні асинхронні операції
-    // ============================================================
 
     function fetchUser(userId) {
         return new Promise((resolve, reject) => {
@@ -580,10 +555,6 @@
         this.disabled = false;
     });
 
-
-    // ============================================================
-    // ВАРІАНТ 5: Черга з обробкою помилок і retry
-    // ============================================================
 
     const urls = [
         'https://jsonplaceholder.typicode.com/posts/1',
