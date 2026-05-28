@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>DjangoPub Hackathon — API Explorer</title>
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=IBM+Plex+Mono:ital,wght@0,400;0,600;1,400&family=Unbounded:wght@400;700;900&display=swap" rel="stylesheet" />
+    <style>
+        :root {
+            --bg: #0d0b08;
+            --amber: #f5a623;
+            --amber2: #ffcf6b;
+            --cream: #f0e6c8;
+            --foam: #fdf6e3;
+            --dark: #1a1409;
+            --wood: #2d1f0e;
+            --muted: #6b5a3a;
+            --green: #3d7a3a;
+            --red: #c0392b;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background: var(--bg);
+            color: var(--cream);
+            font-family: 'IBM Plex Mono', monospace;
+            overflow-x: hidden;
+        }
+
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+            pointer-events: none;
+            z-index: 999;
+            opacity: 0.4;
+        }
+
+        .hero {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            padding: 40px 20px;
+        }
+
+        .hero-bg {
+            position: absolute;
+            inset: 0;
+            background:
+                    radial-gradient(ellipse 80% 60% at 50% 110%, rgba(245,166,35,0.18) 0%, transparent 70%),
+                    radial-gradient(ellipse 40% 40% at 20% 20%, rgba(245,166,35,0.07) 0%, transparent 60%),
+                    linear-gradient(180deg, #0d0b08 0%, #1a1409 100%);
+        }
+
+        .bubbles {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 200px;
+            overflow: hidden;
+            pointer-events: none;
+        }
+
+        .bubble {
+            position: absolute;
+            bottom: -20px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(253,246,227,0.9), rgba(245,166,35,0.3));
+            animation: rise linear infinite;
+        }
+
+        @keyframes rise {
+            0%   { transform: translateY(0) scale(1); opacity: 0.7; }
+            100% { transform: translateY(-220px) scale(0.3); opacity: 0; }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+        }
+
+        .hero-eyebrow {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(245,166,35,0.12);
+            border: 1px solid rgba(245,166,35,0.35);
+            border-radius: 2px;
+            padding: 6px 18px;
+            font-size: 0.7rem;
+            letter-spacing: 4px;
+            color: var(--amber);
+            margin-bottom: 28px;
+            animation: fadeUp 0.8s ease both;
+        }
+
+        .hero-eyebrow::before,
+        .hero-eyebrow::after {
+            content: '🍺';
+            font-size: 0.9rem;
+        }
+
+        .hero-title {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: clamp(5rem, 16vw, 14rem);
+            line-height: 0.9;
+            letter-spacing: 2px;
+            color: var(--amber);
+            text-shadow:
+                    0 0 80px rgba(245,166,35,0.4),
+                    0 2px 0 #7a4f00,
+                    0 4px 0 #5a3900;
+            animation: fadeUp 0.8s 0.1s ease both;
+        }
+
+        .hero-title .line2 {
+            color: var(--cream);
+            font-size: clamp(3rem, 10vw, 9rem);
+            display: block;
+            text-shadow: 0 2px 0 #3a2a0a;
+        }
+
+        .hero-sub {
+            margin-top: 24px;
+            font-size: 0.85rem;
+            color: var(--muted);
+            line-height: 1.8;
+            animation: fadeUp 0.8s 0.2s ease both;
+        }
+
+        .hero-cta {
+            margin-top: 36px;
+            display: flex;
+            gap: 14px;
+            justify-content: center;
+            flex-wrap: wrap;
+            animation: fadeUp 0.8s 0.3s ease both;
+        }
+
+        .pint {
+            font-size: 5rem;
+            animation: float 3s ease-in-out infinite;
+            display: block;
+            margin: 20px auto 0;
+            filter: drop-shadow(0 0 30px rgba(245,166,35,0.5));
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-3deg); }
+            50%       { transform: translateY(-12px) rotate(3deg); }
+        }
+
+        nav {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(13,11,8,0.92);
+            backdrop-filter: blur(20px);
+            border-bottom: 2px solid rgba(245,166,35,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 40px;
+            height: 58px;
+        }
+
+        .nav-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.4rem;
+            color: var(--amber);
+            letter-spacing: 3px;
+        }
+
+        .nav-logo span { color: var(--cream); }
+
+        .nav-links {
+            display: flex;
+            gap: 4px;
+        }
+
+        .nav-links a {
+            padding: 5px 14px;
+            font-size: 0.72rem;
+            color: var(--muted);
+            text-decoration: none;
+            letter-spacing: 1px;
+            border: 1px solid transparent;
+            border-radius: 2px;
+            transition: all 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--amber);
+            border-color: rgba(245,166,35,0.4);
+            background: rgba(245,166,35,0.06);
+        }
+
+        .container {
+            max-width: 1080px;
+            margin: 0 auto;
+            padding: 0 30px 100px;
+        }
+
+        .section {
+            padding-top: 80px;
+        }
+
+        .section-label {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin-bottom: 28px;
+        }
+
+        .label-num {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3.5rem;
+            color: rgba(245,166,35,0.15);
+            line-height: 1;
+        }
+
+        .label-text h2 {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--cream);
+            letter-spacing: 1px;
+        }
+
+        .label-text p {
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-top: 3px;
+        }
+
+        .label-text p code {
+            color: var(--amber);
+        }
+
+        .card {
+            background: linear-gradient(135deg, #1a1409 0%, #150f04 100%);
+            border: 1px solid rgba(245,166,35,0.15);
+            border-radius: 6px;
+            padding: 28px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--amber), transparent);
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 24px;
+            background: var(--amber);
+            color: var(--bg);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+
+        .btn:hover {
+            background: var(--amber2);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(245,166,35,0.3);
+        }
+
+        .btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none; }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--amber);
+            color: var(--amber);
+        }
+
+        .btn-outline:hover {
+            background: rgba(245,166,35,0.1);
+            box-shadow: 0 0 20px rgba(245,166,35,0.15);
+        }
+
+        .field {
+            margin-bottom: 14px;
+        }
+
+        .field label {
+            display: block;
+            font-size: 0.7rem;
+            color: var(--muted);
+            letter-spacing: 2px;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+
+        input[type="text"], textarea {
+            width: 100%;
+            background: rgba(0,0,0,0.4);
+            border: 1px solid rgba(245,166,35,0.2);
+            border-radius: 3px;
+            padding: 10px 14px;
+            color: var(--cream);
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--amber);
+            box-shadow: 0 0 0 3px rgba(245,166,35,0.08);
+        }
+
+        textarea { resize: vertical; min-height: 90px; }
+
+        .output {
+            margin-top: 22px;
+            padding-top: 22px;
+            border-top: 1px solid rgba(245,166,35,0.1);
+        }
+
+        .output-header {
+            font-size: 0.65rem;
+            letter-spacing: 3px;
+            color: rgba(245,166,35,0.5);
+            margin-bottom: 14px;
+            text-transform: uppercase;
+        }
+
+        .user-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 10px;
+            max-height: 340px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .user-card {
+            background: rgba(245,166,35,0.04);
+            border: 1px solid rgba(245,166,35,0.12);
+            border-radius: 4px;
+            padding: 12px 14px;
+            transition: all 0.2s;
+            cursor: default;
+        }
+
+        .user-card:hover {
+            background: rgba(245,166,35,0.09);
+            border-color: rgba(245,166,35,0.35);
+            transform: translateY(-2px);
+        }
+
+        .user-card-avatar {
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--amber), #7a4f00);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--bg);
+            margin-bottom: 10px;
+        }
+
+        .user-card-name {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.72rem;
+            font-weight: 700;
+            color: var(--cream);
+            margin-bottom: 4px;
+        }
+
+        .user-card-email {
+            font-size: 0.68rem;
+            color: var(--muted);
+        }
+
+        .posts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+
+        .post-card {
+            background: rgba(0,0,0,0.3);
+            border: 1px solid rgba(245,166,35,0.08);
+            border-left: 3px solid var(--amber);
+            border-radius: 3px;
+            padding: 14px 16px;
+            transition: all 0.2s;
+        }
+
+        .post-card:hover {
+            background: rgba(245,166,35,0.04);
+            border-left-color: var(--amber2);
+        }
+
+        .post-title {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--amber2);
+            margin-bottom: 6px;
+            text-transform: capitalize;
+        }
+
+        .post-body-text {
+            font-size: 0.75rem;
+            color: var(--muted);
+            line-height: 1.6;
+            text-transform: capitalize;
+        }
+
+        .profile-hero {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            background: rgba(245,166,35,0.05);
+            border: 1px solid rgba(245,166,35,0.15);
+            border-radius: 5px;
+            margin-bottom: 18px;
+        }
+
+        .profile-avatar {
+            width: 64px;
+            height: 64px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--amber), #c07800);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 1.6rem;
+            color: var(--bg);
+            flex-shrink: 0;
+            box-shadow: 0 0 30px rgba(245,166,35,0.3);
+        }
+
+        .profile-name {
+            font-family: 'Unbounded', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 900;
+            margin-bottom: 6px;
+        }
+
+        .profile-tags {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .tag {
+            font-size: 0.68rem;
+            background: rgba(245,166,35,0.1);
+            border: 1px solid rgba(245,166,35,0.25);
+            color: var(--amber);
+            padding: 3px 10px;
+            border-radius: 20px;
+        }
+
+        .msg-success {
+            background: rgba(61,122,58,0.15);
+            border: 1px solid rgba(61,122,58,0.4);
+            border-radius: 3px;
+            padding: 12px 16px;
+            color: #7dbb7a;
+            font-size: 0.85rem;
+        }
+
+        .msg-error {
+            background: rgba(192,57,43,0.12);
+            border: 1px solid rgba(192,57,43,0.35);
+            border-radius: 3px;
+            padding: 12px 16px;
+            color: #e07068;
+            font-size: 0.85rem;
+        }
+
+        .loading {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        .spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(245,166,35,0.2);
+            border-top-color: var(--amber);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            flex-shrink: 0;
+        }
+
+        footer {
+            border-top: 1px solid rgba(245,166,35,0.1);
+            padding: 50px 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .footer-logo {
+            font-family: 'Bebas Neue', sans-serif;
+            font-size: 3rem;
+            color: rgba(245,166,35,0.15);
+            letter-spacing: 6px;
+        }
+
+        .footer-sub {
+            font-size: 0.7rem;
+            color: var(--muted);
+            margin-top: 8px;
+            letter-spacing: 2px;
+        }
+
+        .divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(245,166,35,0.2), transparent);
+            margin: 60px 0 0;
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(245,166,35,0.3); border-radius: 2px; }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        @media (max-width: 640px) {
+            nav { padding: 0 16px; }
+            .container { padding: 0 16px 60px; }
+            .hero-title { font-size: 5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="hero">
+    <div class="hero-bg"></div>
+    <div class="bubbles" id="bubbles"></div>
+
+    <div class="hero-content">
+        <div class="hero-eyebrow">HACKATHON · DJANGO PUB · 2024</div>
+        <div class="hero-title">
+            HATA<br>
+            <span class="line2">CON</span>
+        </div>
+        <span class="pint">🍺</span>
+        <p class="hero-sub">
+            Fetch API · Promise · async/await<br/>
+            Зроблено з ❤️ та пінтою темного
+        </p>
+        <div class="hero-cta">
+            <a href="#task1" style="text-decoration:none">
+                <button class="btn">Розпочати дослідження</button>
+            </a>
+            <a href="#task2" style="text-decoration:none">
+                <button class="btn btn-outline">POST запити</button>
+            </a>
+        </div>
+    </div>
+</div>
+
+<nav>
+    <div class="nav-logo">HATA<span>CON</span></div>
+    <div class="nav-links">
+        <a href="#task1">// GET Users</a>
+        <a href="#task2">// POST</a>
+        <a href="#task3">// async/await</a>
+        <a href="#task4">// Profile</a>
+    </div>
+</nav>
+
+<div class="container">
+
+    <div class="section" id="task1">
+        <div class="section-label">
+            <div class="label-num">01</div>
+            <div class="label-text">
+                <h2>Список користувачів</h2>
+                <p>GET · <code>fetch()</code> · <code>.then()</code> · обробка помилок</p>
+            </div>
+        </div>
+        <div class="card">
+            <p style="font-size:0.75rem; color:var(--muted); margin-bottom:18px;">
+                → <span style="color:var(--amber)">https://jsonplaceholder.typicode.com/users</span>
+            </p>
+            <button class="btn" id="task1-btn">🍺 Налити список</button>
+            <div id="task1-output"></div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section" id="task2">
+        <div class="section-label">
+            <div class="label-num">02</div>
+            <div class="label-text">
+                <h2>Створення поста</h2>
+                <p>POST · <code>JSON.stringify()</code> · <code>Content-Type: application/json</code></p>
+            </div>
+        </div>
+        <div class="card">
+            <p style="font-size:0.75rem; color:var(--muted); margin-bottom:20px;">
+                → <span style="color:var(--amber)">https://jsonplaceholder.typicode.com/posts</span>
+            </p>
+            <div class="field">
+                <label>// title</label>
+                <input type="text" id="task2-title" placeholder="Заголовок поста..." />
+            </div>
+            <div class="field">
+                <label>// body</label>
+                <textarea id="task2-body" placeholder="Текст поста..."></textarea>
+            </div>
+            <button class="btn" id="task2-btn">📤 Відправити POST</button>
+            <div id="task2-output"></div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section" id="task3">
+        <div class="section-label">
+            <div class="label-num">03</div>
+            <div class="label-text">
+                <h2>Пости через async/await</h2>
+                <p>async/await · try/catch · обробка помилок на сторінці</p>
+            </div>
+        </div>
+        <div class="card">
+            <p style="font-size:0.75rem; color:var(--muted); margin-bottom:18px;">
+                → <span style="color:var(--amber)">https://jsonplaceholder.typicode.com/posts</span>
+            </p>
+            <button class="btn" id="task3-btn">📜 Завантажити пости</button>
+            <div id="task3-output"></div>
+        </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div class="section" id="task4">
+        <div class="section-label">
+            <div class="label-num">04</div>
+            <div class="label-text">
+                <h2>Профіль користувача</h2>
+                <p>Promise.all() · паралельне завантаження · async/await</p>
+            </div>
+        </div>
+        <div class="card">
+            <p style="font-size:0.75rem; color:var(--muted); margin-bottom:18px;">
+                → <span style="color:var(--amber)">/users/1</span>
+                <span style="color:var(--muted)"> + </span>
+                <span style="color:var(--amber)">/posts?userId=1</span>
+            </p>
+            <button class="btn" id="task4-btn">👤 Завантажити профіль</button>
+            <div id="task4-output"></div>
+        </div>
+    </div>
+
+</div>
+
+<footer>
+    <div class="footer-logo">DJANGOPUB</div>
+    <p class="footer-sub">HATACON · FETCH API · PROMISE · ASYNC/AWAIT · 🍺</p>
+</footer>
+
+<script>
+    const bubblesContainer = document.getElementById("bubbles");
+    for (let i = 0; i < 18; i++) {
+        const b = document.createElement("div");
+        b.className = "bubble";
+        const size = Math.random() * 14 + 4;
+        b.style.cssText = `
+      width: ${size}px;
+      height: ${size}px;
+      left: ${Math.random() * 100}%;
+      animation-duration: ${Math.random() * 4 + 3}s;
+      animation-delay: ${Math.random() * 5}s;
+      opacity: ${Math.random() * 0.6 + 0.2};
+    `;
+        bubblesContainer.appendChild(b);
+    }
+
+    // ЗАВДАННЯ 1
+    document.getElementById("task1-btn").addEventListener("click", () => {
+        const output = document.getElementById("task1-output");
+        const btn = document.getElementById("task1-btn");
+
+        output.innerHTML = `<div class="output"><div class="loading"><div class="spinner"></div>Наливаємо список...</div></div>`;
+        btn.disabled = true;
+
+        fetch("https://jsonplaceholder.typicode.com/users")
+            .then((res) => {
+                if (!res.ok) throw new Error();
+                return res.json();
+            })
+            .then((users) => {
+                output.innerHTML = `
+          <div class="output">
+            <div class="output-header">// ${users.length} відвідувачів бару</div>
+            <div class="user-grid">
+              ${users.map((u) => {
+                    const initials = u.name.split(" ").map(w => w[0]).join("").slice(0, 2);
+                    return `
+                  <div class="user-card">
+                    <div class="user-card-avatar">${initials}</div>
+                    <div class="user-card-name">${u.name}</div>
+                    <div class="user-card-email">${u.email}</div>
+                  </div>`;
+                }).join("")}
+            </div>
+          </div>`;
+            })
+            .catch(() => {
+                output.innerHTML = `<div class="output"><div class="msg-error">⚠ Помилка завантаження</div></div>`;
+            })
+            .finally(() => { btn.disabled = false; });
+    });
+
+    // ЗАВДАННЯ 2
+    document.getElementById("task2-btn").addEventListener("click", () => {
+        const title = document.getElementById("task2-title").value.trim();
+        const body  = document.getElementById("task2-body").value.trim();
+        const output = document.getElementById("task2-output");
+        const btn = document.getElementById("task2-btn");
+
+        if (!title || !body) {
+            output.innerHTML = `<div class="output"><div class="msg-error">⚠ Заповніть всі поля</div></div>`;
+            return;
+        }
+
+        output.innerHTML = `<div class="output"><div class="loading"><div class="spinner"></div>Відправка...</div></div>`;
+        btn.disabled = true;
+
+        fetch("https://jsonplaceholder.typicode.com/posts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ title, body }),
+        })
+            .then((res) => { if (!res.ok) throw new Error(); return res.json(); })
+            .then((data) => {
+                output.innerHTML = `<div class="output"><div class="msg-success">✓ Пост створено! ID: <strong>${data.id}</strong></div></div>`;
+                document.getElementById("task2-title").value = "";
+                document.getElementById("task2-body").value = "";
+            })
+            .catch(() => {
+                output.innerHTML = `<div class="output"><div class="msg-error">⚠ Помилка завантаження</div></div>`;
+            })
+            .finally(() => { btn.disabled = false; });
+    });
+
+    // ЗАВДАННЯ 3
+    document.getElementById("task3-btn").addEventListener("click", async () => {
+        const output = document.getElementById("task3-output");
+        const btn = document.getElementById("task3-btn");
+
+        output.innerHTML = `<div class="output"><div class="loading"><div class="spinner"></div>Завантаження постів...</div></div>`;
+        btn.disabled = true;
+
+        try {
+            const res = await fetch("https://jsonplaceholder.typicode.com/posts");
+            if (!res.ok) throw new Error();
+            const posts = await res.json();
+            const first10 = posts.slice(0, 10);
+
+            output.innerHTML = `
+        <div class="output">
+          <div class="output-header">// показано 10 з ${posts.length} постів</div>
+          <div class="posts-list">
+            ${first10.map((p) => `
+              <div class="post-card">
+                <div class="post-title">${p.title}</div>
+                <div class="post-body-text">${p.body}</div>
+              </div>`).join("")}
+          </div>
+        </div>`;
+        } catch {
+            output.innerHTML = `<div class="output"><div class="msg-error">⚠ Помилка завантаження</div></div>`;
+        } finally {
+            btn.disabled = false;
+        }
+    });
+
+    // ЗАВДАННЯ 4
+    document.getElementById("task4-btn").addEventListener("click", async () => {
+        const output = document.getElementById("task4-output");
+        const btn = document.getElementById("task4-btn");
+
+        output.innerHTML = `<div class="output"><div class="loading"><div class="spinner"></div>Promise.all() — паралельне завантаження...</div></div>`;
+        btn.disabled = true;
+
+        try {
+            const [userRes, postsRes] = await Promise.all([
+                fetch("https://jsonplaceholder.typicode.com/users/1"),
+                fetch("https://jsonplaceholder.typicode.com/posts?userId=1"),
+            ]);
+            if (!userRes.ok || !postsRes.ok) throw new Error();
+
+            const user  = await userRes.json();
+            const posts = await postsRes.json();
+            const initials = user.name.split(" ").map(w => w[0]).join("").slice(0, 2);
+
+            output.innerHTML = `
+        <div class="output">
+          <div class="output-header">// профіль + ${posts.length} постів</div>
+          <div class="profile-hero">
+            <div class="profile-avatar">${initials}</div>
+            <div>
+              <div class="profile-name">${user.name}</div>
+              <div class="profile-tags">
+                <span class="tag">✉ ${user.email}</span>
+                <span class="tag">📍 ${user.address.city}</span>
+              </div>
+            </div>
+          </div>
+          <div class="posts-list">
+            ${posts.map((p) => `
+              <div class="post-card">
+                <div class="post-title">${p.title}</div>
+                <div class="post-body-text">${p.body}</div>
+              </div>`).join("")}
+          </div>
+        </div>`;
+        } catch {
+            output.innerHTML = `<div class="output"><div class="msg-error">⚠ Помилка завантаження</div></div>`;
+        } finally {
+            btn.disabled = false;
+        }
+    });
+</script>
+</body>
+</html>

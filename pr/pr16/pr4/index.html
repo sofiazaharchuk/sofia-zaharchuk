@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="uk">
+    <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Практична робота: DOM та події</title>
+<style>
+    * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+    body {
+    font-family: Georgia, serif;
+    background: #f4f1eb;
+    color: #1a1a1a;
+    padding: 40px 20px;
+}
+
+    h1 {
+    text-align: center;
+    font-size: 1.6rem;
+    margin-bottom: 40px;
+    letter-spacing: 1px;
+}
+
+    .tasks {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+    .task {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 24px;
+}
+
+    .task h2 {
+    font-size: 1rem;
+    margin-bottom: 16px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #1a1a1a;
+}
+
+    input[type="text"],
+    input[type="number"] {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 0.95rem;
+    margin-bottom: 8px;
+}
+
+    button {
+    padding: 8px 14px;
+    background: #1a1a1a;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    margin: 4px 4px 4px 0;
+}
+
+    button:hover {
+    background: #444;
+}
+
+    button.active {
+    background: #555;
+    outline: 2px solid #1a1a1a;
+}
+
+    ul {
+    list-style: none;
+    margin-top: 12px;
+}
+
+    ul li {
+    padding: 7px 10px;
+    border: 1px solid #eee;
+    border-radius: 4px;
+    margin-bottom: 6px;
+    cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.95rem;
+}
+
+    ul li:hover {
+    background: #f9f9f9;
+}
+
+    ul li span.remove {
+    color: #999;
+    font-size: 1rem;
+}
+
+    /* Варіант 2 */
+    .style-demo-text {
+    font-size: 20px;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-bottom: 12px;
+    min-height: 60px;
+    transition: all 0.2s;
+}
+
+    .control-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+    .control-row label {
+    font-size: 0.9rem;
+    min-width: 120px;
+}
+
+    input[type="color"] {
+    width: 40px;
+    height: 32px;
+    padding: 2px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+    input[type="range"] {
+    flex: 1;
+}
+
+    /* Варіант 3 */
+    .timer-display {
+    font-size: 3rem;
+    font-weight: bold;
+    text-align: center;
+    padding: 20px 0;
+    letter-spacing: 4px;
+}
+
+    .timer-controls {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    margin-top: 8px;
+}
+
+    .timer-message {
+    text-align: center;
+    color: #c0392b;
+    font-weight: bold;
+    margin-top: 10px;
+    min-height: 24px;
+}
+
+    /* Варіант 4 */
+    .no-results {
+    color: #999;
+    font-style: italic;
+    font-size: 0.9rem;
+    padding: 8px 0;
+    display: none;
+}
+
+    .sort-buttons {
+    display: flex;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+    .sort-buttons button.active {
+    background: #333;
+}
+</style>
+</head>
+<body>
+<h1>Практична робота: Маніпуляції DOM та обробка подій</h1>
+
+<div class="tasks">
+
+    <!-- ВАРІАНТ 1: Динамічне створення та сортування списку -->
+    <div class="task">
+        <h2>Варіант 1: Динамічний список</h2>
+        <input type="text" id="v1-input" placeholder="Введіть значення..." />
+        <div>
+            <button id="v1-add">Додати</button>
+            <button id="v1-sort">Сортувати А-Я</button>
+        </div>
+        <ul id="v1-list"></ul>
+    </div>
+
+    <!-- ВАРІАНТ 2: Динамічна зміна стилю -->
+    <div class="task">
+        <h2>Варіант 2: Зміна стилів</h2>
+        <div class="style-demo-text" id="v2-text">
+            Це демонстраційний текст для зміни стилів.
+        </div>
+        <div class="control-row">
+            <label>Колір тексту:</label>
+            <input type="color" id="v2-color" value="#1a1a1a" />
+        </div>
+        <div class="control-row">
+            <label>Колір фону:</label>
+            <input type="color" id="v2-bg" value="#ffffff" />
+        </div>
+        <div class="control-row">
+            <label>Розмір шрифту: <span id="v2-size-val">20px</span></label>
+            <input type="range" id="v2-size" min="10" max="48" value="20" />
+        </div>
+        <div>
+            <button id="v2-bold">Жирний</button>
+            <button id="v2-italic">Курсив</button>
+            <button id="v2-underline">Підкреслення</button>
+            <button id="v2-toggle">Сховати</button>
+            <button id="v2-dark">Dark mode</button>
+            <button id="v2-reset">Скинути</button>
+        </div>
+    </div>
+
+    <!-- ВАРІАНТ 3: Таймер зі зворотним відліком -->
+    <div class="task">
+        <h2>Варіант 3: Таймер</h2>
+        <input type="number" id="v3-input" placeholder="Введіть секунди..." min="1" />
+        <div class="timer-display" id="v3-display">00:00</div>
+        <div class="timer-controls">
+            <button id="v3-start">Старт</button>
+            <button id="v3-pause">Пауза</button>
+            <button id="v3-plus">+10 сек</button>
+            <button id="v3-minus">-10 сек</button>
+        </div>
+        <div class="timer-message" id="v3-message"></div>
+    </div>
+
+    <!-- ВАРІАНТ 4: Фільтр та сортування списку -->
+    <div class="task">
+        <h2>Варіант 4: Фільтр та сортування</h2>
+        <input type="text" id="v4-search" placeholder="Пошук..." />
+        <div class="sort-buttons">
+            <button id="v4-sort-alpha" class="active">За алфавітом</button>
+            <button id="v4-sort-date">За датою</button>
+        </div>
+        <ul id="v4-list"></ul>
+        <div class="no-results" id="v4-no-results">Нічого не знайдено</div>
+    </div>
+
+</div>
+
+<script>
+    // ============================================================
+    // ВАРІАНТ 1: Динамічне створення та сортування списку
+    // ============================================================
+
+    const v1Input = document.getElementById("v1-input");
+    const v1List = document.getElementById("v1-list");
+    const v1Add = document.getElementById("v1-add");
+    const v1Sort = document.getElementById("v1-sort");
+
+    function v1AddItem() {
+    const value = v1Input.value.trim();
+    if (!value) {
+    alert("Введіть значення!");
+    return;
+}
+    const li = document.createElement("li");
+    li.innerHTML = `${value} <span class="remove">✕</span>`;
+    li.addEventListener("click", () => li.remove());
+    v1List.appendChild(li);
+    v1Input.value = "";
+}
+
+    v1Add.addEventListener("click", v1AddItem);
+
+    v1Input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") v1AddItem();
+});
+
+    v1Sort.addEventListener("click", () => {
+    const items = Array.from(v1List.querySelectorAll("li"));
+    items
+    .sort((a, b) => a.textContent.trim().localeCompare(b.textContent.trim(), "uk"))
+    .forEach((item) => v1List.appendChild(item));
+});
+
+
+    // ============================================================
+    // ВАРІАНТ 2: Динамічна зміна стилю сторінки
+    // ============================================================
+
+    const v2Text = document.getElementById("v2-text");
+    const v2Color = document.getElementById("v2-color");
+    const v2Bg = document.getElementById("v2-bg");
+    const v2Size = document.getElementById("v2-size");
+    const v2SizeVal = document.getElementById("v2-size-val");
+
+    const defaultStyles = {
+    color: "#1a1a1a",
+    backgroundColor: "#ffffff",
+    fontSize: "20px",
+    fontWeight: "normal",
+    fontStyle: "normal",
+    textDecoration: "none",
+};
+
+    v2Color.addEventListener("input", () => {
+    v2Text.style.color = v2Color.value;
+});
+
+    v2Bg.addEventListener("input", () => {
+    v2Text.style.backgroundColor = v2Bg.value;
+});
+
+    v2Size.addEventListener("input", () => {
+    v2Text.style.fontSize = v2Size.value + "px";
+    v2SizeVal.textContent = v2Size.value + "px";
+});
+
+    document.getElementById("v2-bold").addEventListener("click", function () {
+    const isBold = v2Text.style.fontWeight === "bold";
+    v2Text.style.fontWeight = isBold ? "normal" : "bold";
+    this.classList.toggle("active", !isBold);
+});
+
+    document.getElementById("v2-italic").addEventListener("click", function () {
+    const isItalic = v2Text.style.fontStyle === "italic";
+    v2Text.style.fontStyle = isItalic ? "normal" : "italic";
+    this.classList.toggle("active", !isItalic);
+});
+
+    document.getElementById("v2-underline").addEventListener("click", function () {
+    const isUnderline = v2Text.style.textDecoration === "underline";
+    v2Text.style.textDecoration = isUnderline ? "none" : "underline";
+    this.classList.toggle("active", !isUnderline);
+});
+
+    document.getElementById("v2-toggle").addEventListener("click", function () {
+    const isHidden = v2Text.style.display === "none";
+    v2Text.style.display = isHidden ? "block" : "none";
+    this.textContent = isHidden ? "Сховати" : "Показати";
+});
+
+    document.getElementById("v2-dark").addEventListener("click", function () {
+    const isDark = document.body.classList.toggle("dark");
+    if (isDark) {
+    document.body.style.background = "#1a1a1a";
+    document.body.style.color = "#f4f1eb";
+} else {
+    document.body.style.background = "#f4f1eb";
+    document.body.style.color = "#1a1a1a";
+}
+    this.textContent = isDark ? "Light mode" : "Dark mode";
+});
+
+    document.getElementById("v2-reset").addEventListener("click", () => {
+    Object.assign(v2Text.style, defaultStyles);
+    v2Text.style.display = "block";
+    v2Color.value = "#1a1a1a";
+    v2Bg.value = "#ffffff";
+    v2Size.value = 20;
+    v2SizeVal.textContent = "20px";
+    document.getElementById("v2-toggle").textContent = "Сховати";
+    document.querySelectorAll("#v2-bold, #v2-italic, #v2-underline").forEach((b) =>
+    b.classList.remove("active")
+    );
+});
+
+
+    // ============================================================
+    // ВАРІАНТ 3: Таймер із зворотним відліком
+    // ============================================================
+
+    const v3Input = document.getElementById("v3-input");
+    const v3Display = document.getElementById("v3-display");
+    const v3Message = document.getElementById("v3-message");
+
+    let v3Seconds = 0;
+    let v3Interval = null;
+    let v3Running = false;
+
+    function v3UpdateDisplay() {
+    const m = Math.floor(v3Seconds / 60).toString().padStart(2, "0");
+    const s = (v3Seconds % 60).toString().padStart(2, "0");
+    v3Display.textContent = `${m}:${s}`;
+}
+
+    document.getElementById("v3-start").addEventListener("click", () => {
+    if (v3Running) return;
+
+    if (!v3Seconds) {
+    const val = parseInt(v3Input.value);
+    if (!val || val <= 0) {
+    alert("Введіть коректну кількість секунд!");
+    return;
+}
+    v3Seconds = val;
+    v3UpdateDisplay();
+}
+
+    v3Message.textContent = "";
+    v3Running = true;
+    v3Interval = setInterval(() => {
+    if (v3Seconds <= 0) {
+    clearInterval(v3Interval);
+    v3Running = false;
+    v3Message.textContent = "⏰ Час вийшов!";
+    return;
+}
+    v3Seconds--;
+    v3UpdateDisplay();
+}, 1000);
+});
+
+    document.getElementById("v3-pause").addEventListener("click", () => {
+    clearInterval(v3Interval);
+    v3Running = false;
+});
+
+    document.getElementById("v3-plus").addEventListener("click", () => {
+    v3Seconds += 10;
+    v3UpdateDisplay();
+});
+
+    document.getElementById("v3-minus").addEventListener("click", () => {
+    v3Seconds = Math.max(0, v3Seconds - 10);
+    v3UpdateDisplay();
+});
+
+
+    // ============================================================
+    // ВАРІАНТ 4: Фільтр та сортування списку
+    // ============================================================
+
+    const v4Items = [
+    { text: "Яблуко", date: new Date("2024-01-03") },
+    { text: "Банан", date: new Date("2024-01-01") },
+    { text: "Апельсин", date: new Date("2024-01-05") },
+    { text: "Груша", date: new Date("2024-01-02") },
+    { text: "Кавун", date: new Date("2024-01-04") },
+    { text: "Виноград", date: new Date("2024-01-06") },
+    ];
+
+    const v4List = document.getElementById("v4-list");
+    const v4Search = document.getElementById("v4-search");
+    const v4NoResults = document.getElementById("v4-no-results");
+    const v4SortAlpha = document.getElementById("v4-sort-alpha");
+    const v4SortDate = document.getElementById("v4-sort-date");
+
+    let v4SortMode = "alpha";
+
+    function v4Render() {
+    const query = v4Search.value.trim().toLowerCase();
+
+    let filtered = v4Items.filter((item) =>
+    item.text.toLowerCase().includes(query)
+    );
+
+    if (v4SortMode === "alpha") {
+    filtered.sort((a, b) => a.text.localeCompare(b.text, "uk"));
+} else {
+    filtered.sort((a, b) => a.date - b.date);
+}
+
+    v4List.innerHTML = "";
+    if (filtered.length === 0) {
+    v4NoResults.style.display = "block";
+} else {
+    v4NoResults.style.display = "none";
+    filtered.forEach((item) => {
+    const li = document.createElement("li");
+    li.textContent = item.text;
+    v4List.appendChild(li);
+});
+}
+}
+
+    v4Search.addEventListener("input", v4Render);
+
+    v4SortAlpha.addEventListener("click", () => {
+    v4SortMode = "alpha";
+    v4SortAlpha.classList.add("active");
+    v4SortDate.classList.remove("active");
+    v4Render();
+});
+
+    v4SortDate.addEventListener("click", () => {
+    v4SortMode = "date";
+    v4SortDate.classList.add("active");
+    v4SortAlpha.classList.remove("active");
+    v4Render();
+});
+
+    v4Render();
+</script>
+</body>
+</html>
