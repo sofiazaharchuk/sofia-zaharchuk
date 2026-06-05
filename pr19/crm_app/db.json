@@ -1,0 +1,8 @@
+{
+  "students": [
+    { "id": 1, "firstName": "Іван",    "lastName": "Петренко", "group": "ІПЗ-21", "age": 20 },
+    { "id": 2, "firstName": "Марія",   "lastName": "Коваль",   "group": "КІ-22",  "age": 19 },
+    { "id": 3, "firstName": "Олексій", "lastName": "Бойко",    "group": "ІПЗ-21", "age": 21 },
+    { "id": 4, "firstName": "Софія",   "lastName": "Мельник",  "group": "ЕК-23",  "age": 18 }
+  ]
+}
